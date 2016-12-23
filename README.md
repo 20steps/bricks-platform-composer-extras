@@ -1,6 +1,6 @@
 # BricksPlatformComposerExtras
 
-TBD
+TBD.
 
 # LICENSE
 See `LICENSE` file in the package directory.
