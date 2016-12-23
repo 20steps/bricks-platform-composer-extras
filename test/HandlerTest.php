@@ -1,0 +1,161 @@
+<?php
+/**
+ * Copyright (c) 2015 Cu.be Solutions
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+namespace BricksPlatformComposerExtrasTest;
+
+use Composer\Composer;
+use Composer\Script\Event;
+use BricksPlatformComposerExtras\Handler;
+use PHPUnit_Framework_TestCase as TestCase;
+use Mockery as m;
+
+/**
+ * Class HandlerTest
+ * @package BricksPlatformComposerExtras
+ */
+class HandlerTest extends TestCase
+{
+
+    const PROCESSOR_TYPE_GENERIC = 'BricksPlatformComposerExtras\\Processor\\Generic';
+
+    const CLASS_NAME = 'BricksPlatformComposerExtras\\Handler';
+
+    protected function setUp()
+    {
+        parent::setUp();
+        $toDelete = ['/fixture/basic.php'];
+        array_map(function($val){
+           @unlink(__DIR__ . $val);
+        }, $toDelete);
+    }
+
+    /**
+     * tearDown
+     */
+    protected function tearDown()
+    {
+        m::close();
+    }
+
+    /**
+     * Test _getProcessorForType returns a Processor
+     */
+    public function testGetProcessorForTypeReturnsProcessor()
+    {
+        $handler = new Handler();
+
+        $reflection = new \ReflectionMethod($handler, '_getProcessorForType');
+        $reflection->setAccessible(true);
+        $result = $reflection->invokeArgs($handler, [self::PROCESSOR_TYPE_GENERIC, $this->_buildIO()]);
+        $this->assertInstanceOf('BricksPlatformComposerExtras\Processor\ProcessorInterface', $result);
+        $this->assertInstanceOf(self::PROCESSOR_TYPE_GENERIC, $result);
+    }
+
+    /**
+     * Test _getProcessorForType throws an exception if invalid type requested.
+     */
+    public function testGetProcessorForTypeThrowsException()
+    {
+        $handler = new Handler();
+
+        $reflection = new \ReflectionMethod($handler, '_getProcessorForType');
+        $reflection->setAccessible(true);
+        $this->setExpectedException('\InvalidArgumentException');
+        $reflection->invokeArgs($handler, ['invalid', $this->_buildIO()]);
+    }
+
+    /**
+     * Test install() works
+     */
+    public function testInstall()
+    {
+        /** @var Handler $handler */
+        $handler = $this->_buildHandlerMock();
+        $config = include __DIR__ . '/config/basic.php';
+        $event = $this->_buildEvent($config);
+        $handler->install($event);
+    }
+
+    /**
+     * Test install() throws exception when config key unset
+     */
+    public function testInstallThrowsExceptionConfigUnset()
+    {
+        /** @var Handler $handler */
+        $handler = $this->_buildHandlerMock(0, 0);
+        $config = [];
+        $event = $this->_buildEvent($config);
+        $this->setExpectedException('\InvalidArgumentException');
+        $handler->install($event);
+    }
+
+    /**
+     * Test install() throws exceptionw hen config key not array
+     */
+    public function testInstallThrowsExceptionConfigNotArray()
+    {
+        /** @var Handler $handler */
+        $handler = $this->_buildHandlerMock(0, 0);
+        $config = [
+            'dist-installer-params' => 'test'
+        ];
+        $event = $this->_buildEvent($config);
+        $this->setExpectedException('\InvalidArgumentException');
+        $handler->install($event);
+    }
+
+    /**
+     * @return \PHPUnit_Framework_MockObject_MockObject
+     */
+    protected function _buildIO(){
+       return m::mock('Composer\\IO\\IOInterface');
+    }
+
+    /**
+     * @return \PHPUnit_Framework_MockObject_MockObject
+     */
+    protected function _buildEvent($extra) {
+        $event = m::mock('Composer\\Script\\Event');
+        $event->shouldReceive('getComposer->getPackage->getExtra')->once()->andReturn($extra);
+        $event->shouldReceive('getIO')->zeroOrMoreTimes()->andReturn($this->_buildIO());
+        return $event;
+    }
+
+    /**
+     * @return \PHPUnit_Framework_MockObject_MockObject
+     */
+    protected function _buildHandlerMock($processCount = 1, $getProcessorForTypeCount = 1)
+    {
+        $processor = $this->getMockBuilder('BricksPlatformComposerExtras\\Processor\\ProcessorInterface')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $processor->expects($this->exactly($processCount))
+            ->method('process');
+
+        $handler = $this->getMock(self::CLASS_NAME, ['_getProcessorForType']);
+        $handler->expects($this->exactly($getProcessorForTypeCount))
+            ->method('_getProcessorForType')
+            ->will($this->returnValue($processor));
+        return $handler;
+    }
+
+}

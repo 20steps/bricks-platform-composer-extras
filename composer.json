@@ -1,0 +1,25 @@
+{
+  "name": "20steps/bricks-platform-composer-extras",
+  "description": "Cpmposer extensions for setting up the bricks platform using composer",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Helmut Hoffer von Ankershoffen",
+      "email": "hhva@20steps.de"
+    }
+  ],
+  "require": {
+    "php": ">=7.0"
+  },
+  "require-dev": {
+    "mockery/mockery": "^0.9.4",
+    "phpunit/phpunit": ">=4.2",
+    "composer/composer": "@dev"
+  },
+  "autoload": {
+    "psr-4": {
+      "BricksPlatformComposerExtras\\": "src/",
+      "BricksPlatformComposerExtrasTest\\": "test/"
+    }
+  }
+}
