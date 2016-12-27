@@ -1,6 +1,6 @@
 <?php
 return [
-    'dist-installer-params' => [
+    'bricks-platform' => [
         'file' => __DIR__ . '/../fixture/basic.php',
     ],
     'expected' => __DIR__ . '/../fixture/basic.php.expected',

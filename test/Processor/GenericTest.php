@@ -30,7 +30,7 @@ class GenericTest extends TestCase
     {
         foreach($this->getTemplateNames() as $template) {
             $config = $this->_includeConfig($template);
-            $file = $config['dist-installer-params']['file'];
+            $file = $config['bricks-platform']['file'];
             switch($template) {
                 case 'overwrite':
                     $oldFile = $file . '.old';
@@ -84,7 +84,7 @@ class GenericTest extends TestCase
      */
     public function testConfig($config)
     {
-        $processorConfig = $config['dist-installer-params'];
+        $processorConfig = $config['bricks-platform'];
         $processor = new Generic($this->_buildIO());
         $property = new \ReflectionProperty($processor, 'config');
         $property->setAccessible(true);
@@ -163,7 +163,7 @@ class GenericTest extends TestCase
      */
     public function testProcess($config)
     {
-        $processorConfig = $config['dist-installer-params'];
+        $processorConfig = $config['bricks-platform'];
         $io = $this->_buildIO();
         $writeCount = 0;
         $assertFileExists = true;
@@ -258,12 +258,12 @@ class GenericTest extends TestCase
         // BAD CONFIGS
         $result[] = [[
             // missing 'file' key
-            'dist-installer-params' => [],
+            'bricks-platform' => [],
             'exception' => 'InvalidArgumentException',
         ]];
         $result[] = [[
             // dist-file does not exist
-            'dist-installer-params' => [
+            'bricks-platform' => [
                 'file'      => 'non-existent',
                 'dist-file' => 'non-existent',
             ],

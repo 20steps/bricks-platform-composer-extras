@@ -11,7 +11,7 @@ use Composer\IO\IOInterface;
  *
  * @package BricksPlatformComposerExtras
  */
-class Generic implements ProcessorInterface
+class Dist implements ProcessorInterface
 {
 
     protected $io;
@@ -31,10 +31,14 @@ class Generic implements ProcessorInterface
 
         $exists = is_file($realFile);
 
-        $action = $exists ? 'Rewriting' : 'Creating';
+        $action = $exists ? 'Updating' : 'Creating';
+	
+	    $distFile = $config['dist-file'];
+	    
+	    $distTemplate = file_get_contents($distFile);
 
         if ($exists) {
-            if ($this->getIO()->askConfirmation('Destination file already exists, overwrite (y/n)? ')) {
+            if ($this->getIO()->askConfirmation(sprintf('Destination file %s already exists - update from %s (y/[n])? ',$realFile, $distFile),false)) {
                 $this->getIO()->write(sprintf('<info>%s the "%s" file</info>', $action, $realFile));
                 $oldFile = $realFile . '.old';
                 copy($realFile, $oldFile);
@@ -43,13 +47,13 @@ class Generic implements ProcessorInterface
                 return false;
             }
         } else {
+	        $this->getIO()->write(sprintf('<info>%s the "%s" file</info>', $action, $realFile));
             if (!is_dir($dir = dirname($realFile))) {
                 mkdir($dir, 0755, true);
             }
         }
 
-        $template = file_get_contents($config['dist-file']);
-        $contents = preg_replace_callback('/\{\{(.*)\}\}/', array($this, '_templateReplace'), $template);
+        $contents = preg_replace_callback('/\{\{(.*)\}\}/', array($this, '_templateReplace'), $distTemplate);
         file_put_contents($realFile, $contents);
 
         return true;
@@ -85,7 +89,7 @@ class Generic implements ProcessorInterface
     public function setConfig($config)
     {
         if (empty($config['file'])) {
-            throw new \InvalidArgumentException('The extra.dist-installer-params.file setting is required.');
+            throw new \InvalidArgumentException('The extra.bricks-platform.dist-files.file setting is required.');
         }
 
         if (empty($config['dist-file'])) {
@@ -93,7 +97,7 @@ class Generic implements ProcessorInterface
         }
 
         if (!is_file($config['dist-file'])) {
-            throw new \InvalidArgumentException(sprintf('The dist file "%s" does not exist. Check your dist-file config or create it.', $config['dist-file']));
+            throw new \InvalidArgumentException(sprintf('The dist file "%s" does not exist. Check settings of extra.bricks-platform.config in your composer.json or create the file.', $config['dist-file']));
         }
         $this->config = $config;
     }

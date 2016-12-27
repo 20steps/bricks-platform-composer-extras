@@ -116,7 +116,7 @@ class HandlerTest extends TestCase
         /** @var Handler $handler */
         $handler = $this->_buildHandlerMock(0, 0);
         $config = [
-            'dist-installer-params' => 'test'
+            'bricks-platform' => 'test'
         ];
         $event = $this->_buildEvent($config);
         $this->setExpectedException('\InvalidArgumentException');

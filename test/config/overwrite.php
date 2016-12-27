@@ -1,6 +1,6 @@
 <?php
 return [
-    'dist-installer-params' => [
+    'bricks-platform' => [
         'file' => __DIR__ . '/../fixture/overwrite.php',
     ],
     'confirmation' => true,
