@@ -2,8 +2,11 @@
 
 namespace BricksPlatformComposerExtras;
 
-
 use Composer\Script\Event;
+
+use BricksPlatformComposerExtras\Handler\ReloadHandler;
+use BricksPlatformComposerExtras\Handler\SetupHandler;
+use BricksPlatformComposerExtras\Handler\DeployHandler;
 
 /**
  * Class Bootstrap
@@ -15,21 +18,30 @@ use Composer\Script\Event;
 class Bootstrap {
 
     /**
-     * Boostrap a Handler() instance and call the install method.
+     * Boostrap a SetupHandler() instance and call the setup method.
      * @param Event $event
      */
-    static public function install(Event $event) {
-        $handler = new Handler();
-        $handler->install($event);
+    static public function setup(Event $event) {
+        $handler = new SetupHandler();
+        $handler->setup($event);
     }
 	
 	/**
-	 * Boostrap a Handler() instance and call the reload method.
+	 * Boostrap a ReloadHandler() instance and call the reload method.
 	 * @param Event $event
 	 */
 	static public function reload(Event $event) {
-		$handler = new Handler();
+		$handler = new ReloadHandler();
 		$handler->reload($event);
+	}
+	
+	/**
+	 * Boostrap a DeployHandler() instance and call the reload method.
+	 * @param Event $event
+	 */
+	static public function deploy(Event $event) {
+		$handler = new DeployHandler();
+		$handler->deploy($event);
 	}
 
 }

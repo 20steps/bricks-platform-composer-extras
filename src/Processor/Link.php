@@ -83,7 +83,7 @@ class Link implements ProcessorInterface
     }
     
     protected function getTargetFile($realFile) {
-	    $target = Handler::getTarget();
+	    $target = Handler\AbstractHandler::getTarget();
 	    $realFileSegments = explode('/',$realFile);
 	    $filename = array_pop($realFileSegments);
 	    $filenameSegments = explode('.',$filename);
