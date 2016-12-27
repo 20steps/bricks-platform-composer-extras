@@ -19,6 +19,7 @@ class Handler
 	
 	const EXTRAS_KEY = 'bricks-platform';
 	const CONFIG_KEY = 'config';
+	const SERVICE_KEY = 'service';
 	
 	/** @var IOInterface; */
 	protected $io;
@@ -58,8 +59,61 @@ class Handler
             $processor->process($config);
         }
     }
+    
+	public function reload(Event $event) {
+		$this->io = $event->getIO();
+		
 
-    /**
+		$extras = $event->getComposer()->getPackage()->getExtra();
+		
+		if (!isset($extras[self::EXTRAS_KEY])) {
+			throw new \InvalidArgumentException(sprintf('Bricks setup must be configured using the extra.%s setting.', self::EXTRAS_KEY));
+		}
+		
+		$extras = $extras[self::EXTRAS_KEY];
+		
+		if (!is_array($extras)) {
+			throw new \InvalidArgumentException(sprintf('The extra.%s setting must be an array or a configuration object.', self::EXTRAS_KEY));
+		}
+		
+		if (!isset($extras[self::SERVICE_KEY])) {
+			$this->getIO()->write('<info>No services configured, skipping ...</info>');
+			return;
+		}
+		
+		$services = $extras[self::SERVICE_KEY];
+		
+		$this->getIO()->write('<info>Reloading services</info>');
+		
+		$stage = Handler::getStage();
+		foreach ($services as $service) {
+			$name = $service['name'];
+			$stages = $service['stage'];
+			$sudo = false;
+			if (isset($service['sudo'])) {
+				$sudo = $service['sudo'];
+			}
+			if (!in_array($stage,$stages)) {
+				$this->getIO()->write(sprintf('<comment>Skipping %s as stage does not match</comment>',$name));
+				continue;
+			}
+			if (isset($service['script'])) {
+				$script = $service['script'];
+			} else {
+				$script = 'service '.$name.' reload';
+			}
+			if ($sudo) {
+				$script = 'sudo '.$script;
+			}
+			$this->getIO()->write(sprintf('<info>Reloading %s</info>',$name));
+			shell_exec($script);
+		}
+		
+		$this->getIO()->write('<info>Reloaded services.</info>');
+		
+	}
+		
+		/**
      * @param $type
      * @param $io
      * @return ProcessorInterface
@@ -80,7 +134,12 @@ class Handler
     	$io = $this->getIO();
 
 	    $filename = 'etc/stage';
-	    if (!is_file($filename)) {
+	    if (is_file($filename)) {
+		    $update = $io->ask('Update stage setting (y,[n])?', false);
+	    } else {
+		    $update = true;
+	    }
+	    if ($update) {
 	    	$default=Handler::getEnv('BRICKS_STAGE','dev');
 		    $value = $io->ask(sprintf('Please enter the stage of your installation [%s] ', $default), $default);
 		    file_put_contents($filename,$value);
@@ -90,7 +149,12 @@ class Handler
 	    Handler::putEnv('BRICKS_STAGE',$value);
 
     	$filename = 'etc/color';
-	    if (!is_file($filename)) {
+	    if (is_file($filename)) {
+		    $update = $io->ask('Update color setting (y,[n])?', false);
+	    } else {
+		    $update = true;
+	    }
+	    if ($update) {
 		    $default=Handler::getEnv('BRICKS_COLOR','generic');
 		    $value = $io->ask(sprintf('Please enter the color of your installation [%s] ',$default), $default);
 		    file_put_contents($filename,$value);
@@ -122,7 +186,15 @@ class Handler
 	}
 	
 	public static function getTarget() {
-		return Handler::getEnv('BRICKS_COLOR').'_'.Handler::getEnv('BRICKS_STAGE');
+		return Handler::getColor().'_'.Handler::getStage();
+	}
+	
+	public static function getStage() {
+		return Handler::getEnv('BRICKS_STAGE');
+	}
+	
+	public static function getColor() {
+		return Handler::getEnv('BRICKS_COLOR');
 	}
 
 }

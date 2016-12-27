@@ -22,5 +22,14 @@ class Bootstrap {
         $handler = new Handler();
         $handler->install($event);
     }
+	
+	/**
+	 * Boostrap a Handler() instance and call the reload method.
+	 * @param Event $event
+	 */
+	static public function reload(Event $event) {
+		$handler = new Handler();
+		$handler->reload($event);
+	}
 
 }
