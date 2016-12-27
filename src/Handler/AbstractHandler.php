@@ -23,10 +23,10 @@ abstract class AbstractHandler
 	// public helpers
 	
 	public function loadTarget($quiet=true) {
-		$value=file_get_contents('etc/stage');
+		$value=trim(@file_get_contents('etc/stage'));
 		self::putEnv('BRICKS_STAGE',$value);
 		
-		$value=file_get_contents('etc/color');
+		$value=trim(@file_get_contents('etc/color'));
 		self::putEnv('BRICKS_COLOR',$value);
 		
 		if (!$quiet) {
