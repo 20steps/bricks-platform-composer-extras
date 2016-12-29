@@ -7,6 +7,7 @@ use Composer\Script\Event;
 use BricksPlatformComposerExtras\Handler\ReloadHandler;
 use BricksPlatformComposerExtras\Handler\SetupHandler;
 use BricksPlatformComposerExtras\Handler\DeployHandler;
+use BricksPlatformComposerExtras\Handler\RemoteHandler;
 
 /**
  * Class Bootstrap
@@ -25,6 +26,15 @@ class Bootstrap {
         $handler = new SetupHandler();
         $handler->setup($event);
     }
+	
+	/**
+	 * Boostrap a SetupHandler() instance and call the setup method.
+	 * @param Event $event
+	 */
+	static public function remotes(Event $event) {
+		$handler = new RemoteHandler();
+		$handler->remotes($event);
+	}
 	
 	/**
 	 * Boostrap a ReloadHandler() instance and call the reload method.

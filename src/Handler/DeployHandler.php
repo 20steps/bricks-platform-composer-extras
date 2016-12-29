@@ -15,6 +15,7 @@ class DeployHandler extends AbstractHandler
 {
 	
 	const TARGETS_KEY = 'target';
+	const REMOTE_KEY = 'remote';
 	
 	public function deploy(Event $event) {
 		$this->io = $event->getIO();
@@ -48,6 +49,13 @@ class DeployHandler extends AbstractHandler
 		
 		$targets = $extras[self::TARGETS_KEY];
 		
+		if (!isset($extras[self::REMOTE_KEY])) {
+			$this->getIO()->write('<info>No remptes configured, skipping ...</info>');
+			return;
+		}
+		
+		$remotesConfig = $extras[self::REMOTE_KEY];
+		
 		$foundTarget=false;
 		foreach ($targets as $target) {
 			$name=$target['name'];
@@ -57,6 +65,16 @@ class DeployHandler extends AbstractHandler
 			$this->getIO()->write(sprintf('<info>Deploying to target %s</info>',$name));
 			$remotes=$target['remote'];
 			foreach ($remotes as $remote) {
+				// (re)setup remote
+				foreach ($remotesConfig as $remoteConfig) {
+					if ($remoteConfig['name']==$remote) {
+						$color=$remoteConfig['color'];
+						$stage=$remoteConfig['stage'];
+						$command = sprintf('bricks-deploy setup -r "%s" --color %s --stage %s',$remote,$color,$stage);
+						shell_exec($command);
+					}
+				}
+				// deploy to remote
 				$this->getIO()->write(sprintf('<info>Deploying to remote %s</info>',$remote));
 				shell_exec(sprintf('git push %s',$remote));
 			}
