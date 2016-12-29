@@ -32,7 +32,7 @@ class Link implements ProcessorInterface
 
         $exists = is_file($realFile);
 
-        $targetFile = $this->getTargetFile($realFile);
+        $targetFile = $this->getTargetFile($realFile,$config);
         
         if ($exists) {
 	        if ($this->getIO()->askConfirmation(sprintf('Destination file %s already exists - link to %s (y/[n])? ',$realFile, $targetFile),false)) {
@@ -84,8 +84,12 @@ class Link implements ProcessorInterface
         $this->config = $config;
     }
     
-    protected function getTargetFile($realFile) {
+    protected function getTargetFile($realFile,$config) {
 	    $target = Handler\AbstractHandler::getTarget();
+	    if (isset($config['use-hostname'])) {
+	    	$hostname=gethostname();
+		    $target=$target.'_'.$hostname;
+	    }
 	    $realFileSegments = explode('/',$realFile);
 	    $filename = array_pop($realFileSegments);
 	    $filenameSegments = explode('.',$filename);

@@ -71,11 +71,12 @@ class DeployHandler extends AbstractHandler
 						$color=$remoteConfig['color'];
 						$stage=$remoteConfig['stage'];
 						$command = sprintf('bricks-deploy setup -r "%s" --color %s --stage %s',$remote,$color,$stage);
+						$this->getIO()->write(sprintf('<comment>Executing command %s</comment>',$command));
 						shell_exec($command);
 					}
 				}
 				// deploy to remote
-				$this->getIO()->write(sprintf('<info>Deploying to remote %s</info>',$remote));
+				$this->getIO()->write(sprintf('<comment>Deploying to remote %s</comment>',$remote));
 				shell_exec(sprintf('git push %s',$remote));
 			}
 			$foundTarget=true;
