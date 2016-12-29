@@ -45,14 +45,16 @@ class ReloadHandler extends AbstractHandler
 		$stage = self::getStage();
 		foreach ($services as $service) {
 			$name = $service['name'];
-			$stages = $service['stage'];
 			$sudo = false;
 			if (isset($service['sudo'])) {
 				$sudo = $service['sudo'];
 			}
-			if (!in_array($stage,$stages)) {
-				$this->getIO()->write(sprintf('<comment>Skipping %s as stage does not match</comment>',$name));
-				continue;
+			if (isset($service['stage'])) {
+				$stages = $service['stage'];
+				if (!in_array($stage,$stages)) {
+					$this->getIO()->write(sprintf('<comment>Skipping %s as stage does not match</comment>',$name));
+					continue;
+				}
 			}
 			if (isset($service['script'])) {
 				$script = $service['script'];
