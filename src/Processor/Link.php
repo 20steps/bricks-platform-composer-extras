@@ -35,7 +35,7 @@ class Link implements ProcessorInterface
         $targetFile = $this->getTargetFile($realFile,$config);
         
         if ($exists) {
-	        if ($this->getIO()->askConfirmation(sprintf('Destination file %s already exists - link to %s (y/[n])? ',$realFile, $targetFile),false)) {
+	        if ($this->getIO()->askConfirmation(sprintf('Destination file %s already exists - link to %s (y/[n])? ',$realFile, $targetFile),true)) {
 		        $this->getIO()->write(sprintf('<info>Relinking %s -> %s</info>', $realFile, $targetFile));
 		        unlink($realFile);
 		        symlink($targetFile, $realFile);
@@ -85,6 +85,9 @@ class Link implements ProcessorInterface
     }
     
     protected function getTargetFile($realFile,$config) {
+    	if (isset($config['link-file'])) {
+    		return $config['link-file'];
+	    }
 	    $target = Handler\AbstractHandler::getTarget();
 	    if (isset($config['use-hostname'])) {
 	    	$hostname=gethostname();
