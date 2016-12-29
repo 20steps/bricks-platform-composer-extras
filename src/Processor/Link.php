@@ -35,9 +35,11 @@ class Link implements ProcessorInterface
         $targetFile = $this->getTargetFile($realFile);
         
         if ($exists) {
-	        $this->getIO()->write(sprintf('<info>Relinking %s -> %s</info>', $realFile, $targetFile));
-        	unlink($realFile);
-        	symlink($targetFile,$realFile);
+	        if ($this->getIO()->askConfirmation(sprintf('Destination file %s already exists - link to %s (y/[n])? ',$realFile, $targetFile),false)) {
+		        $this->getIO()->write(sprintf('<info>Relinking %s -> %s</info>', $realFile, $targetFile));
+		        unlink($realFile);
+		        symlink($targetFile, $realFile);
+	        }
         } else {
 	        $this->getIO()->write(sprintf('<info>Linking %s -> %s</info>', $realFile, $targetFile));
 	        symlink($targetFile,$realFile);
