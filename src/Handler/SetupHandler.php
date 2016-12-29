@@ -43,8 +43,16 @@ class SetupHandler extends AbstractHandler
 	    }
 	
 	    $configs = $extras[self::CONFIG_KEY];
-	    
+	
+	    $stage = self::getStage();
         foreach ($configs as $config) {
+        	if (isset($config['stage'])) {
+		        $stages = $config['stage'];
+		        if (!in_array($stage,$stages)) {
+			        // $this->getIO()->write(sprintf('<comment>Skipping as stage does not match</comment>'));
+			        continue;
+		        }
+	        }
             $type = isset($config['type']) ? $config['type'] : 'dist';
 	        $class = 'BricksPlatformComposerExtras\\Processor\\' . ucfirst($type);
             /** @var ProcessorInterface $processor */
