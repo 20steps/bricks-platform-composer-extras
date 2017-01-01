@@ -78,35 +78,11 @@ class Directory implements ProcessorInterface
      */
     public function setConfig($config)
     {
-        if (empty($config['file'])) {
-            throw new \InvalidArgumentException('The extra.bricks-platform.config.file setting is required.');
+        if (empty($config['directory'])) {
+            throw new \InvalidArgumentException('The extra.bricks-platform.config.directory setting is required.');
         }
 
         $this->config = $config;
     }
     
-    protected function getTargetFile($realFile,$config) {
-    	if (isset($config['link-file'])) {
-    		return $config['link-file'];
-	    }
-	    $target = Handler\AbstractHandler::getTarget();
-	    if (isset($config['use-hostname'])) {
-	    	$hostname=gethostname();
-		    $target=$target.'_'.$hostname;
-	    }
-	    $realFileSegments = explode('/',$realFile);
-	    $filename = array_pop($realFileSegments);
-	    $filenameSegments = explode('.',$filename);
-	    if (count($filenameSegments)==1) {
-		    // regular files without suffix
-		    return $filenameSegments[1].'.'.$target;
-	    } else if (count($filenameSegments) == 2 && $filenameSegments[0]=='') {
-	    	// dot-files without suffix
-            return '.'.$filenameSegments[1].'.'.$target;
-	    }
-	    // regular files with suffix
-	    $suffix = array_pop($filenameSegments);
-	    return implode('.',$filenameSegments).'.'.$target.'.'.$suffix;
-    }
-
 }
