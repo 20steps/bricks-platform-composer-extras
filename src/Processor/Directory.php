@@ -48,7 +48,7 @@ class Directory implements ProcessorInterface
 	        $this->getIO()->write(sprintf('<comment>Making sure directory %s exists</comment>', $directoryName));
         	
         }
-
+	    
         if ($sudo) {
 	        $command="sudo sh -c 'mkdir -p ".$directoryName."'";
 	        shell_exec($command);
@@ -56,7 +56,11 @@ class Directory implements ProcessorInterface
 	        	shell_exec("sudo sh -c 'chmod -R ".$mode." ".$directoryName."'");
 	        }
         } else {
-	        mkdir($directoryName,$mode,true);
+        	try {
+		        mkdir($directoryName,$mode,true);
+	        } catch(\Exeption $e) {
+        		// in case it already exists
+	        }
         }
 
         return true;
