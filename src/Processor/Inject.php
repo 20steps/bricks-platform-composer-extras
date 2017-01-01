@@ -2,6 +2,7 @@
 
 namespace BricksPlatformComposerExtras\Processor;
 
+use BricksPlatformComposerExtras\Handler\SetupHandler;
 use Composer\IO\IOInterface;
 use Composer\Script\Event;
 
@@ -12,7 +13,7 @@ use Composer\Script\Event;
  *
  * @package BricksPlatformComposerExtras
  */
-class Dist implements ProcessorInterface
+class Inject implements ProcessorInterface
 {
 
     protected $io;
@@ -32,30 +33,57 @@ class Dist implements ProcessorInterface
 
         $exists = is_file($realFile);
 
-        $action = $exists ? 'Updating' : 'Creating';
+        $action = $exists ? 'Inject into' : 'Update injection into';
 	
-	    $distFile = $config['dist-file'];
+	    $injectFile = $config['inject-file'];
 	    
-	    $distTemplate = file_get_contents($distFile);
+	    $composerJson = json_decode(file_get_contents(getcwd().'/composer.json'),true);
+	    $projectName=$composerJson['name'];
+	    
+	    $injectFileContent = file_get_contents($injectFile);
 
-        if ($exists) {
-            if ($this->getIO()->askConfirmation(sprintf('Destination file %s already exists - update from %s (y/[n])? ',$realFile, $distFile),false)) {
-                $this->getIO()->write(sprintf('<comment>%s the "%s" file</comment>', $action, $realFile));
-                $oldFile = $realFile . '.old';
-                copy($realFile, $oldFile);
-                $this->getIO()->write(sprintf('A copy of the old configuration file was saved to %s', $oldFile));
-            } else {
-                return false;
-            }
-        } else {
-	        $this->getIO()->write(sprintf('<comment>%s the "%s" file</comment>', $action, $realFile));
-            if (!is_dir($dir = dirname($realFile))) {
-                mkdir($dir, 0755, true);
-            }
+        if (!$exists) {
+	        throw new \InvalidArgumentException('The file %s to inject %s into does not exist',$realFile,$injectFile);
         }
+        
 
-        $contents = preg_replace_callback('/\{\{(.*)\}\}/', array($this, '_templateReplace'), $distTemplate);
-        file_put_contents($realFile, $contents);
+	    $realFileContent = file_get_contents($realFile);
+
+        if (isset($config['comment-prefix'])) {
+        	$commentPrefix=$config['comment-prefix'];
+        } else {
+        	$commentPrefix='# ';
+        }
+        
+        $beginOfComment = $commentPrefix.'BRICKS-INJECT-START '.$projectName.' - '.$injectFile;
+        $endOfComment =   $commentPrefix.'BRICKS-INJECT-END '.$projectName.' - '.$injectFile;
+        
+        $pattern = '/'.str_replace('/',"\\/",preg_quote($beginOfComment).'(.+)'.preg_quote($endOfComment)).'/s';
+        $injectedPreviously = preg_match($pattern,$realFileContent,$matches);
+	    if ($injectedPreviously) {
+		    $this->getIO()->write(sprintf('<comment>Updating injection of %s into "%s"</comment>', $injectFile,$realFile));
+		    $realFileContent=preg_replace($pattern,$beginOfComment."\n".$injectFileContent."\n".$endOfComment,$realFileContent);
+	    } else {
+		    $this->getIO()->write(sprintf('<comment>Injecting %s into "%s"</comment>', $injectFile,$realFile));
+		    $realFileContent.="\n\n".$beginOfComment."\n";
+		    $realFileContent.=$injectFileContent."\n";
+		    $realFileContent.=$endOfComment."\n\n";
+	    }
+	    if (isset($config['sudo'])) {
+		    $sudo=$config['sudo'];
+	    } else {
+		    $sudo=false;
+	    }
+	    if ($sudo) {
+	    	$tmpFile = tempnam('/tmp','bricks');
+	    	file_put_contents($tmpFile,$realFileContent);
+	    	$command="sudo sh -c 'cat ".$tmpFile." > ".$realFile."'";
+		    shell_exec($command);
+	    } else {
+	    	file_put_contents($realFile,$realFileContent);
+	    }
+        /*$contents = preg_replace_callback('/\{\{(.*)\}\}/', array($this, '_templateReplace'), $distTemplate);
+        file_put_contents($realFile, $contents);*/
 
         return true;
     }
@@ -93,11 +121,11 @@ class Dist implements ProcessorInterface
             throw new \InvalidArgumentException('The extra.bricks-platform.dist-files.file setting is required.');
         }
 
-        if (empty($config['dist-file'])) {
-            $config['dist-file'] = $config['file'].'.dist';
+        if (empty($config['inject-file'])) {
+            $config['inject-file'] = $config['file'].'.inject';
         }
 
-        if (!is_file($config['dist-file'])) {
+        if (!is_file($config['inject-file'])) {
             throw new \InvalidArgumentException(sprintf('The dist file "%s" does not exist. Check settings of extra.bricks-platform.config in your composer.json or create the file.', $config['dist-file']));
         }
         $this->config = $config;

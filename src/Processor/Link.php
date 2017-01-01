@@ -4,6 +4,7 @@ namespace BricksPlatformComposerExtras\Processor;
 
 use BricksPlatformComposerExtras\Handler;
 use Composer\IO\IOInterface;
+use Composer\Script\Event;
 
 /**
  * Class Generic
@@ -23,7 +24,7 @@ class Link implements ProcessorInterface
         $this->setIO($io);
     }
 
-    public function process(array $config)
+    public function process(array $config, Event $event)
     {
         $this->setConfig($config);
         $config = $this->getConfig();
@@ -36,12 +37,12 @@ class Link implements ProcessorInterface
         
         if ($exists) {
 	        if ($this->getIO()->askConfirmation(sprintf('Destination file %s already exists - link to %s (y/[n])? ',$realFile, $targetFile),true)) {
-		        $this->getIO()->write(sprintf('<info>Relinking %s -> %s</info>', $realFile, $targetFile));
+		        $this->getIO()->write(sprintf('<comment>Relinking %s -> %s</comment>', $realFile, $targetFile));
 		        unlink($realFile);
 		        symlink($targetFile, $realFile);
 	        }
         } else {
-	        $this->getIO()->write(sprintf('<info>Linking %s -> %s</info>', $realFile, $targetFile));
+	        $this->getIO()->write(sprintf('<comment>Linking %s -> %s</comment>', $realFile, $targetFile));
 	        symlink($targetFile,$realFile);
         }
 

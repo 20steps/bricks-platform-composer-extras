@@ -59,6 +59,9 @@ abstract class AbstractHandler
 		return self::getEnv('BRICKS_COLOR');
 	}
 	
+	public static function getProjectDir() {
+		return __DIR__;
+	}
 	
     // protected helpers
 	

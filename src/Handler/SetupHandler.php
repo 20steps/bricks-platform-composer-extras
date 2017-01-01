@@ -57,7 +57,7 @@ class SetupHandler extends AbstractHandler
 	        $class = 'BricksPlatformComposerExtras\\Processor\\' . ucfirst($type);
             /** @var ProcessorInterface $processor */
             $processor = $this->getProcessorForClass($class, $event->getIO());
-            $processor->process($config);
+            $processor->process($config,$event);
         }
     }
     
