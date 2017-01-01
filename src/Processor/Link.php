@@ -42,21 +42,25 @@ class Link implements ProcessorInterface
         
         if ($exists) {
 	        if ($this->getIO()->askConfirmation(sprintf('Destination file %s already exists - link to %s (y/[n])? ',$realFile, $targetFile),true)) {
-		        $this->getIO()->write(sprintf('<comment>Relinking %s -> %s</comment>', $realFile, $targetFile));
 		        if ($sudo) {
+			        $this->getIO()->write(sprintf('<comment>Relinking with sudo %s -> %s</comment>', $realFile, $targetFile));
 			        $command="sudo sh -c 'ln -sf ".$targetFile." ".$realFile."'";
+			        $this->getIO()->write($command);
 			        shell_exec($command);
 		        } else {
+			        $this->getIO()->write(sprintf('<comment>Relinking %s -> %s</comment>', $realFile, $targetFile));
 			        unlink($realFile);
 			        symlink($targetFile, $realFile);
 		        }
 	        }
         } else {
-	        $this->getIO()->write(sprintf('<comment>Linking %s -> %s</comment>', $realFile, $targetFile));
 	        if ($sudo) {
+		        $this->getIO()->write(sprintf('<comment>Linking with sudo %s -> %s</comment>', $realFile, $targetFile));
 		        $command="sudo sh -c 'ln -sf ".$targetFile." ".$realFile."'";
+		        $this->getIO()->write($command);
 		        shell_exec($command);
 	        } else {
+		        $this->getIO()->write(sprintf('<comment>Linking %s -> %s</comment>', $realFile, $targetFile));
 		        try {
 			        unlink($realFile);
 		        } catch (\Exception $e) {
