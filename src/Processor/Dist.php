@@ -37,9 +37,14 @@ class Dist implements ProcessorInterface
 	    $distFile = $config['dist-file'];
 	    
 	    $distTemplate = file_get_contents($distFile);
+	    
+	    $updateByDefault = false;
+	    if (isset($config['update-by-default'])) {
+		    $updateByDefault = $config['update-by-default'];
+	    }
 
         if ($exists) {
-            if ($this->getIO()->askConfirmation(sprintf('Destination file %s already exists - update from %s (y/[n])? ',$realFile, $distFile),false)) {
+            if ($this->getIO()->askConfirmation(sprintf('Destination file %s already exists - update from %s (y/[n])? ',$realFile, $distFile),$updateByDefault)) {
                 $this->getIO()->write(sprintf('<comment>%s the "%s" file</comment>', $action, $realFile));
                 $oldFile = $realFile . '.old';
                 copy($realFile, $oldFile);
