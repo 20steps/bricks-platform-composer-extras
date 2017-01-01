@@ -56,10 +56,15 @@ class ReloadHandler extends AbstractHandler
 					continue;
 				}
 			}
+			if (isset($service['action'])) {
+				$action = $service['action'];
+			} else {
+				$action = 'restart';
+			}
 			if (isset($service['script'])) {
 				$script = $service['script'];
 			} else {
-				$script = 'service '.$name.' reload';
+				$script = 'service '.$name.' '.$action;
 			}
 			if ($sudo) {
 				$script = 'sudo '.$script;
