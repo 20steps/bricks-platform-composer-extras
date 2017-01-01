@@ -58,7 +58,7 @@ class Directory implements ProcessorInterface
         } else {
         	try {
 		        mkdir($directoryName,$mode,true);
-	        } catch(\Exeption $e) {
+	        } catch(\Exception $e) {
         		// in case it already exists
 	        }
         }
