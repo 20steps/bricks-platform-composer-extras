@@ -35,6 +35,11 @@ class Directory implements ProcessorInterface
         } else {
         	$mode= null;
         }
+	    if (isset($config['sudo'])) {
+		    $sudo = $config['sudo'];
+	    } else {
+		    $sudo= false;
+	    }
         
         if ($mode) {
 	        $this->getIO()->write(sprintf('<comment>Making sure directory %s exists with mode %s</comment>', $directoryName, $mode));
@@ -44,7 +49,15 @@ class Directory implements ProcessorInterface
         	
         }
 
-        mkdir($directoryName,$mode,true);
+        if ($sudo) {
+	        $command="sudo sh -c 'mkdir -p ".$directoryName."'";
+	        shell_exec($command);
+	        if ($mode) {
+	        	shell_exec("sudo sh -c 'chmod -R ".$mode." ".$directoryName."'");
+	        }
+        } else {
+	        mkdir($directoryName,$mode,true);
+        }
 
         return true;
     }
