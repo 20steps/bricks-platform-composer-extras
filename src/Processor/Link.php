@@ -43,6 +43,11 @@ class Link implements ProcessorInterface
 	        }
         } else {
 	        $this->getIO()->write(sprintf('<comment>Linking %s -> %s</comment>', $realFile, $targetFile));
+	        try {
+	            unlink($realFile);
+	        } catch(\Exception $e) {
+	        	// try to unlink as $realFile might be a stale link
+	        }
 	        symlink($targetFile,$realFile);
         }
 
