@@ -46,7 +46,6 @@ class Directory implements ProcessorInterface
         	
         } else {
 	        $this->getIO()->write(sprintf('<comment>Making sure directory %s exists</comment>', $directoryName));
-        	
         }
 	    
         if ($sudo) {

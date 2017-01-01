@@ -30,6 +30,11 @@ class Link implements ProcessorInterface
         $config = $this->getConfig();
 
         $realFile = $config['file'];
+        if (isset($config['sudo'])) {
+        	$sudo = $config['sudo'];
+        } else {
+        	$sudo = false;
+        }
 
         $exists = file_exists($realFile);
 
@@ -38,17 +43,27 @@ class Link implements ProcessorInterface
         if ($exists) {
 	        if ($this->getIO()->askConfirmation(sprintf('Destination file %s already exists - link to %s (y/[n])? ',$realFile, $targetFile),true)) {
 		        $this->getIO()->write(sprintf('<comment>Relinking %s -> %s</comment>', $realFile, $targetFile));
-		        unlink($realFile);
-		        symlink($targetFile, $realFile);
+		        if ($sudo) {
+			        $command="sudo sh -c 'ln -sf ".$targetFile." ".$realFile."'";
+			        shell_exec($command);
+		        } else {
+			        unlink($realFile);
+			        symlink($targetFile, $realFile);
+		        }
 	        }
         } else {
 	        $this->getIO()->write(sprintf('<comment>Linking %s -> %s</comment>', $realFile, $targetFile));
-	        try {
-	            unlink($realFile);
-	        } catch(\Exception $e) {
-	        	// try to unlink as $realFile might be a stale link
+	        if ($sudo) {
+		        $command="sudo sh -c 'ln -sf ".$targetFile." ".$realFile."'";
+		        shell_exec($command);
+	        } else {
+		        try {
+			        unlink($realFile);
+		        } catch (\Exception $e) {
+			        // try to unlink as $realFile might be a stale link
+		        }
+		        symlink($targetFile, $realFile);
 	        }
-	        symlink($targetFile,$realFile);
         }
 
         return true;
