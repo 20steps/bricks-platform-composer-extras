@@ -31,7 +31,7 @@ class Link implements ProcessorInterface
 
         $realFile = $config['file'];
 
-        $exists = is_file($realFile);
+        $exists = file_exists($realFile);
 
         $targetFile = $this->getTargetFile($realFile,$config);
         
