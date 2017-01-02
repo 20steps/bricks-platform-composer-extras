@@ -64,6 +64,11 @@ class DeployHandler extends AbstractHandler
 			}
 			$this->getIO()->write(sprintf('<info>Deploying to target %s</info>',$name));
 			$remotes=$target['remote'];
+			if (isset($target['branch'])) {
+				$branch = $target['branch'];
+			} else {
+				$branch = 'master';
+			}
 			foreach ($remotes as $remote) {
 				if (self::getStage()=='dev') {
 					// (re)setup remote
@@ -79,7 +84,7 @@ class DeployHandler extends AbstractHandler
 				}
 				// deploy to remote
 				$this->getIO()->write(sprintf('<comment>Deploying to remote %s</comment>',$remote));
-				shell_exec(sprintf('git push %s',$remote));
+				shell_exec(sprintf('git push %s HEAD:%s',$remote, $branch));
 			}
 			$foundTarget=true;
 			break;
