@@ -65,14 +65,16 @@ class DeployHandler extends AbstractHandler
 			$this->getIO()->write(sprintf('<info>Deploying to target %s</info>',$name));
 			$remotes=$target['remote'];
 			foreach ($remotes as $remote) {
-				// (re)setup remote
-				foreach ($remotesConfig as $remoteConfig) {
-					if ($remoteConfig['name']==$remote) {
-						$color=$remoteConfig['color'];
-						$stage=$remoteConfig['stage'];
-						$command = sprintf('bricks-deploy setup -r "%s" --color %s --stage %s',$remote,$color,$stage);
-						$this->getIO()->write(sprintf('<comment>Executing command %s</comment>',$command));
-						shell_exec($command);
+				if (self::getStage()=='dev') {
+					// (re)setup remote
+					foreach ($remotesConfig as $remoteConfig) {
+						if ($remoteConfig['name']==$remote) {
+							$color=$remoteConfig['color'];
+							$stage=$remoteConfig['stage'];
+							$command = sprintf('bricks-deploy setup -r "%s" --color %s --stage %s',$remote,$color,$stage);
+							$this->getIO()->write(sprintf('<comment>Executing command %s</comment>',$command));
+							shell_exec($command);
+						}
 					}
 				}
 				// deploy to remote
