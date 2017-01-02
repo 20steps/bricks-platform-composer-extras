@@ -43,7 +43,6 @@ class Directory implements ProcessorInterface
         
         if ($mode) {
 	        $this->getIO()->write(sprintf('<comment>Making sure directory %s exists with mode %s</comment>', $directoryName, $mode));
-        	
         } else {
 	        $this->getIO()->write(sprintf('<comment>Making sure directory %s exists</comment>', $directoryName));
         }
@@ -56,7 +55,7 @@ class Directory implements ProcessorInterface
 	        }
         } else {
         	try {
-		        mkdir($directoryName,$mode,true);
+		        mkdir($directoryName,octdec($mode),true);
 	        } catch(\Exception $e) {
         		// in case it already exists
 	        }
