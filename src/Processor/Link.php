@@ -38,10 +38,8 @@ class Link implements ProcessorInterface
 
 		if (isset($config['mode'])) {
 			$mode=$config['mode'];
-			echo "mode found: ".$mode;
 		} else {
 			$mode=null;
-			echo "no mode found";
 		}
 
         $exists = file_exists($realFile);
