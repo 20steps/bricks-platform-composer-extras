@@ -83,7 +83,7 @@ class DeployHandler extends AbstractHandler
 					}
 				}
 				// deploy to remote
-				$this->getIO()->write(sprintf('<comment>Deploying to remote %s</comment>',$remote));
+				$this->getIO()->write(sprintf('<comment>Deploying branch %s to remote %s</comment>',$branch,$remote));
 				shell_exec(sprintf('git push %s HEAD:%s',$remote, $branch));
 			}
 			$foundTarget=true;
