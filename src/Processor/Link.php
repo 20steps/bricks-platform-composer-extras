@@ -36,6 +36,12 @@ class Link implements ProcessorInterface
         	$sudo = false;
         }
 
+		if (isset($config['mode'])) {
+			$mode=$config['mode'];
+		} else {
+			$mode=null;
+		}
+
         $exists = file_exists($realFile);
 
         $targetFile = $this->getTargetFile($realFile,$config);
@@ -47,10 +53,18 @@ class Link implements ProcessorInterface
 			        $command="sudo sh -c 'ln -sf ".$targetFile." ".$realFile."'";
 			        $this->getIO()->write($command);
 			        shell_exec($command);
+					if ($mode) {
+						$command="sudo sh -c 'chmod ".$mode." ".$realFile."'";
+						shell_exec($command);
+					}
 		        } else {
 			        $this->getIO()->write(sprintf('<comment>Relinking %s -> %s</comment>', $realFile, $targetFile));
 			        unlink($realFile);
 			        symlink($targetFile, $realFile);
+					if ($mode) {
+						$command="sh -c 'chmod ".$mode." ".$realFile."'";
+						shell_exec($command);
+					}
 		        }
 	        }
         } else {
@@ -59,6 +73,10 @@ class Link implements ProcessorInterface
 		        $command="sudo sh -c 'ln -sf ".$targetFile." ".$realFile."'";
 		        $this->getIO()->write($command);
 		        shell_exec($command);
+				if ($mode) {
+					$command="sudo sh -c 'chmod ".$mode." ".$realFile."'";
+					shell_exec($command);
+				}
 	        } else {
 		        $this->getIO()->write(sprintf('<comment>Linking %s -> %s</comment>', $realFile, $targetFile));
 		        try {
@@ -67,6 +85,10 @@ class Link implements ProcessorInterface
 			        // try to unlink as $realFile might be a stale link
 		        }
 		        symlink($targetFile, $realFile);
+				if ($mode) {
+					$command="sh -c 'chmod ".$mode." ".$realFile."'";
+					shell_exec($command);
+				}
 	        }
         }
 
