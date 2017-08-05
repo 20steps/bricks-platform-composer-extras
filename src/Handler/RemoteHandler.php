@@ -45,8 +45,18 @@ class RemoteHandler extends AbstractHandler
 		$this->getIO()->write('<info>Updating remotes</info>');
 		
 		$stage = self::getStage();
+		$color = self::getColor();
 		foreach ($remotes as $remote) {
 			$name = $remote['name'];
+			if (array_key_exists('color',$remote)) {
+				if (!is_string($remote['color'])) {
+					$this->getIO()->write(sprintf('<error>Element color must be a string in the definition of a remote</error>'));
+					die;
+				}
+			}
+			if ($remote['color']!=$color) {
+				continue;
+			}
 			$url = $remote['url'];
 			$command = 'git remote rm '.$name.'; git remote add '.$name.' '.$url;
 			$this->getIO()->write(sprintf('<comment>Executing %s </comment>',$command));

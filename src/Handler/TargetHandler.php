@@ -43,16 +43,31 @@ class TargetHandler extends AbstractHandler
 	
     protected function updateColor(Event $event) {
 	    $io = $this->getIO();
+	    
+	    $color = null;
+	    $arguments = $event->getArguments();
+	    if ($arguments && is_array($arguments) && count($arguments)==1) {
+	    	$color = trim($arguments[0]);
+	    }
 	
 	    $filename = 'etc/color';
-	    if (is_file($filename)) {
-		    $update = $io->ask('Update color setting ([y],n)?', true);
+	    
+	    if (!$color) {
+		    if (is_file($filename)) {
+			    $update = $io->ask('Update color setting ([y],n)?', true);
+		    } else {
+			    $update = true;
+		    }
 	    } else {
-		    $update = true;
+	    	$update = true;
 	    }
 	    if ($update) {
 		    $default = self::getEnv('BRICKS_COLOR', 'generic');
-		    $value = $io->ask(sprintf('Please enter the color of your installation [%s] ', $default), $default);
+		    if (!$color) {
+			    $value = $io->ask(sprintf('Please enter the color of your installation [%s] ', $default), $default);
+		    } else {
+		    	$value = $color;
+		    }
 		    file_put_contents($filename, $value);
 		    $this->getIO()->write(sprintf('<info>Writing %s to the "%s" file</info>', $value, $filename));
 	    }
@@ -61,16 +76,30 @@ class TargetHandler extends AbstractHandler
     
     public function updateStage(Event $event) {
 	    $io = $this->getIO();
-
+	
+	    $stage = null;
+	    $arguments = $event->getArguments();
+	    if ($arguments && is_array($arguments) && count($arguments)==1) {
+		    $stage = trim($arguments[0]);
+	    }
+	    
 		$filename = 'etc/stage';
-		if (is_file($filename)) {
-			$update = $io->ask('Update stage setting ([y],n)?', true);
-		} else {
-			$update = true;
-		}
+	    if (!$stage) {
+		    if (is_file($filename)) {
+			    $update = $io->ask('Update stage setting ([y],n)?', true);
+		    } else {
+			    $update = true;
+		    }
+	    } else {
+	    	$update = true;
+	    }
 		if ($update) {
 			$default = self::getEnv('BRICKS_STAGE', 'dev');
-			$value = $io->ask(sprintf('Please enter the stage of your installation [%s] ', $default), $default);
+			if (!$stage) {
+				$value = $io->ask(sprintf('Please enter the stage of your installation [%s] ', $default), $default);
+			} else {
+				$value = $stage;
+			}
 			file_put_contents($filename, $value);
 			$this->getIO()->write(sprintf('<info>Writing %s to the "%s" file</info>', $value, $filename));
 		}

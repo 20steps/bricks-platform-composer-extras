@@ -81,7 +81,5 @@ class Bootstrap {
 		$handler = new TargetHandler();
 		$handler->switchStage($event);
 	}
-	
-	
 
 }
