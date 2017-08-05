@@ -135,7 +135,11 @@ class Link implements ProcessorInterface
     	if (isset($config['link-file'])) {
     		return $config['link-file'];
 	    }
-	    $target = Handler\AbstractHandler::getTarget();
+	    if (isset($config['color-only'])) {
+		    $target=Handler\AbstractHandler::getColor();
+	    } else {
+		    $target = Handler\AbstractHandler::getTarget();
+	    }
 	    if (isset($config['use-hostname'])) {
 	    	$hostname=gethostname();
 		    $target=$target.'_'.$hostname;
