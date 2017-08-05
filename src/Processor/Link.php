@@ -47,7 +47,7 @@ class Link implements ProcessorInterface
         $targetFile = $this->getTargetFile($realFile,$config);
         
         if ($exists) {
-	        if ($this->getIO()->askConfirmation(sprintf('Destination file %s already exists - link to %s (y/[n])? ',$realFile, $targetFile),true)) {
+	        if ($this->getIO()->askConfirmation(sprintf('Destination file %s already exists - link to %s ([y]/n)? ',$realFile, $targetFile),true)) {
 		        if ($sudo) {
 			        $this->getIO()->write(sprintf('<comment>Relinking with sudo %s -> %s</comment>', $realFile, $targetFile));
 			        $command="sudo sh -c 'ln -sf ".$targetFile." ".$realFile."'";
