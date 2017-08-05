@@ -41,9 +41,9 @@ class Link implements ProcessorInterface
 		} else {
 			$mode=null;
 		}
-
+		
         $exists = file_exists($realFile);
-
+        
         $targetFile = $this->getTargetFile($realFile,$config);
         
         if ($exists) {
@@ -132,24 +132,30 @@ class Link implements ProcessorInterface
     }
     
     protected function getTargetFile($realFile,$config) {
+    	
     	if (isset($config['link-file'])) {
     		return $config['link-file'];
 	    }
-	    if (isset($config['color-only'])) {
+	    
+	    if (isset($config['color-only']) && $config['color-only']) {
 		    $target=Handler\AbstractHandler::getColor();
 	    } else {
 		    $target = Handler\AbstractHandler::getTarget();
 	    }
+	    
 	    if (isset($config['use-hostname'])) {
 	    	$hostname=gethostname();
 		    $target=$target.'_'.$hostname;
 	    }
+	
+	
 	    $realFileSegments = explode('/',$realFile);
 	    $filename = array_pop($realFileSegments);
 	    $filenameSegments = explode('.',$filename);
+
 	    if (count($filenameSegments)==1) {
 		    // regular files without suffix
-		    return $filenameSegments[1].'.'.$target;
+		    return $filenameSegments[0].'.'.$target;
 	    } else if (count($filenameSegments) == 2 && $filenameSegments[0]=='') {
 	    	// dot-files without suffix
             return '.'.$filenameSegments[1].'.'.$target;
