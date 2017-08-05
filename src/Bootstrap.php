@@ -53,5 +53,14 @@ class Bootstrap {
 		$handler = new DeployHandler();
 		$handler->deploy($event);
 	}
+	
+	/**
+	 * Boostrap a DeployHandler() instance and call the reload method.
+	 * @param Event $event
+	 */
+	static public function switchColor(Event $event) {
+		$handler = new SwitchColorHandler();
+		$handler->switchColor($event);
+	}
 
 }
