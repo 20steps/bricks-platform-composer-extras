@@ -8,7 +8,7 @@ use BricksPlatformComposerExtras\Handler\ReloadHandler;
 use BricksPlatformComposerExtras\Handler\SetupHandler;
 use BricksPlatformComposerExtras\Handler\DeployHandler;
 use BricksPlatformComposerExtras\Handler\RemoteHandler;
-use BricksPlatformComposerExtras\Handler\SwitchColorHandler;
+use BricksPlatformComposerExtras\Handler\TargetHandler;
 
 /**
  * Class Bootstrap
@@ -59,9 +59,29 @@ class Bootstrap {
 	 * Boostrap a DeployHandler() instance and call the reload method.
 	 * @param Event $event
 	 */
+	static public function printTarget(Event $event) {
+		$handler = new TargetHandler();
+		$handler->printTarget($event);
+	}
+	
+	/**
+	 * Boostrap a DeployHandler() instance and call the reload method.
+	 * @param Event $event
+	 */
 	static public function switchColor(Event $event) {
-		$handler = new SwitchColorHandler();
+		$handler = new TargetHandler();
 		$handler->switchColor($event);
 	}
+	
+	/**
+	 * Boostrap a DeployHandler() instance and call the reload method.
+	 * @param Event $event
+	 */
+	static public function switchStage(Event $event) {
+		$handler = new TargetHandler();
+		$handler->switchStage($event);
+	}
+	
+	
 
 }
