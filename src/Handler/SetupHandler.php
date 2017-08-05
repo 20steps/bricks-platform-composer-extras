@@ -45,11 +45,25 @@
 			$configs = $extras[self::CONFIG_KEY];
 			
 			$stage = self::getStage();
+			$color = self::getColor();
 			foreach ($configs as $config) {
 				if (isset($config['stage'])) {
 					$stages = $config['stage'];
+					if (!is_array($config['stage'])) {
+						$this->getIO()->write(sprintf('<error>stage element must be non-existent or an array</error>'));
+					}
 					if (!in_array($stage,$stages)) {
 						// $this->getIO()->write(sprintf('<comment>Skipping as stage does not match</comment>'));
+						continue;
+					}
+				}
+				if (isset($config['color'])) {
+					if (!is_array($config['color'])) {
+						$this->getIO()->write(sprintf('<error>color element must be non-existent or an array</error>'));
+					}
+					$colors = $config['color'];
+					if (!in_array($color,$colors)) {
+						// $this->getIO()->write(sprintf('<comment>Skipping as color does not match</comment>'));
 						continue;
 					}
 				}
