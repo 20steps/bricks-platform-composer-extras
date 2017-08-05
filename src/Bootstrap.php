@@ -8,6 +8,7 @@ use BricksPlatformComposerExtras\Handler\ReloadHandler;
 use BricksPlatformComposerExtras\Handler\SetupHandler;
 use BricksPlatformComposerExtras\Handler\DeployHandler;
 use BricksPlatformComposerExtras\Handler\RemoteHandler;
+use BricksPlatformComposerExtras\Handler\SwitchColorHandler;
 
 /**
  * Class Bootstrap
