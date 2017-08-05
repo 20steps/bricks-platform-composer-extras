@@ -44,7 +44,12 @@ class Dist implements ProcessorInterface
 	    }
 
         if ($exists) {
-            if ($this->getIO()->askConfirmation(sprintf('Destination file %s already exists - update from %s (y/[n])? ',$realFile, $distFile),$updateByDefault)) {
+	    	if ($updateByDefault) {
+	    		$message = 'Destination file %s already exists - update from %s ([y]/n)? ';
+		    } else {
+	    		$message = 'Destination file %s already exists - update from %s (y/[n])? ';
+		    }
+            if ($this->getIO()->askConfirmation(sprintf($message,$realFile, $distFile),$updateByDefault)) {
                 $this->getIO()->write(sprintf('<comment>%s the "%s" file</comment>', $action, $realFile));
                 $oldFile = $realFile . '.old';
                 copy($realFile, $oldFile);
