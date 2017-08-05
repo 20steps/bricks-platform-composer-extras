@@ -2,8 +2,10 @@
 
 
 namespace BricksPlatformComposerExtras\Handler;
+
 use Composer\IO\IOInterface;
 use Composer\Script\Event;
+
 use BricksPlatformComposerExtras\Processor\ProcessorInterface;
 
 /**
@@ -56,11 +58,20 @@ class DeployHandler extends AbstractHandler
 		
 		$remotesConfig = $extras[self::REMOTE_KEY];
 		
+		$localColor = self::getColor();
+		
 		$foundTarget=false;
 		foreach ($targets as $target) {
 			$name=$target['name'];
 			if ($name!=$deployTargetName) {
 				continue;
+			}
+			if (array_key_exists('color',$target['color'])) {
+				$color=$target['color'];
+				if ($color!=$localColor) {
+					$this->getIO()->write(sprintf('<comment>Skipping target as color does not match</comment>'));
+					continue;
+				}
 			}
 			$this->getIO()->write(sprintf('<info>Deploying to target %s</info>',$name));
 			$remotes=$target['remote'];
@@ -74,7 +85,6 @@ class DeployHandler extends AbstractHandler
 					// (re)setup remote
 					foreach ($remotesConfig as $remoteConfig) {
 						if ($remoteConfig['name']==$remote) {
-							$color=$remoteConfig['color'];
 							$stage=$remoteConfig['stage'];
 							$command = sprintf('bricks-deploy setup -r "%s" --color %s --stage %s',$remote,$color,$stage);
 							$this->getIO()->write(sprintf('<comment>Executing command %s</comment>',$command));

@@ -2,8 +2,10 @@
 
 
 namespace BricksPlatformComposerExtras\Handler;
+
 use Composer\IO\IOInterface;
 use Composer\Script\Event;
+
 use BricksPlatformComposerExtras\Processor\ProcessorInterface;
 
 /**
@@ -45,10 +47,26 @@ class SetupHandler extends AbstractHandler
 	    $configs = $extras[self::CONFIG_KEY];
 	
 	    $stage = self::getStage();
+	    $color = self::getColor();
         foreach ($configs as $config) {
         	if (isset($config['stage'])) {
+		        if (!is_array($config['stage'])) {
+			        $this->getIO()->write(sprintf('<error>stage must be an array or non-existen</error>'));
+			        exit;
+		        }
 		        $stages = $config['stage'];
 		        if (!in_array($stage,$stages)) {
+			        // $this->getIO()->write(sprintf('<comment>Skipping as stage does not match</comment>'));
+			        continue;
+		        }
+	        }
+	        if (isset($config['color'])) {
+		        if (!is_array($config['color'])) {
+			        $this->getIO()->write(sprintf('<error>color must be an array or non-existen</error>'));
+			        exit;
+		        }
+		        $colors = $config['color'];
+		        if (!in_array($color,$colors)) {
 			        // $this->getIO()->write(sprintf('<comment>Skipping as stage does not match</comment>'));
 			        continue;
 		        }

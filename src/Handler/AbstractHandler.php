@@ -2,8 +2,10 @@
 
 
 namespace BricksPlatformComposerExtras\Handler;
+
 use Composer\IO\IOInterface;
 use Composer\Script\Event;
+
 use BricksPlatformComposerExtras\Processor\ProcessorInterface;
 
 /**
@@ -70,6 +72,5 @@ abstract class AbstractHandler
 		return $this->io;
 	}
 	
-
 
 }
