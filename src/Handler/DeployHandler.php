@@ -66,7 +66,7 @@ class DeployHandler extends AbstractHandler
 			if ($name!=$deployTargetName) {
 				continue;
 			}
-			if (array_key_exists('color',$target['color'])) {
+			if (array_key_exists('color',$target)) {
 				$color=$target['color'];
 				if ($color!=$localColor) {
 					$this->getIO()->write(sprintf('<comment>Skipping target as color does not match</comment>'));
@@ -86,7 +86,7 @@ class DeployHandler extends AbstractHandler
 					foreach ($remotesConfig as $remoteConfig) {
 						if ($remoteConfig['name']==$remote) {
 							$stage=$remoteConfig['stage'];
-							$command = sprintf('bricks-deploy setup -r "%s" --color %s --stage %s',$remote,$color,$stage);
+							$command = sprintf('bricks-deploy setup -r "%s" --color %s --stage %s',$remote,$localColor,$stage);
 							$this->getIO()->write(sprintf('<comment>Executing command %s</comment>',$command));
 							shell_exec($command);
 						}

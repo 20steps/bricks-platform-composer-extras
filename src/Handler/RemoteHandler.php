@@ -53,9 +53,9 @@ class RemoteHandler extends AbstractHandler
 					$this->getIO()->write(sprintf('<error>Element color must be a string in the definition of a remote</error>'));
 					die;
 				}
-			}
-			if ($remote['color']!=$color) {
-				continue;
+				if ($remote['color']!=$color) {
+					continue;
+				}
 			}
 			$url = $remote['url'];
 			$command = 'git remote rm '.$name.'; git remote add '.$name.' '.$url;
