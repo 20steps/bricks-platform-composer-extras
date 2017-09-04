@@ -9,6 +9,7 @@ use BricksPlatformComposerExtras\Handler\SetupHandler;
 use BricksPlatformComposerExtras\Handler\DeployHandler;
 use BricksPlatformComposerExtras\Handler\RemoteHandler;
 use BricksPlatformComposerExtras\Handler\TargetHandler;
+use BricksPlatformComposerExtras\Handler\RemoteConsoleHandler;
 
 /**
  * Class Bootstrap
@@ -47,7 +48,7 @@ class Bootstrap {
 	}
 	
 	/**
-	 * Boostrap a DeployHandler() instance and call the reload method.
+	 * Boostrap a DeployHandler() instance and call the deploy method.
 	 * @param Event $event
 	 */
 	static public function deploy(Event $event) {
@@ -56,7 +57,7 @@ class Bootstrap {
 	}
 	
 	/**
-	 * Boostrap a DeployHandler() instance and call the reload method.
+	 * Boostrap a TargetHandler() instance and call the printTarget method.
 	 * @param Event $event
 	 */
 	static public function printTarget(Event $event) {
@@ -65,7 +66,7 @@ class Bootstrap {
 	}
 	
 	/**
-	 * Boostrap a DeployHandler() instance and call the reload method.
+	 * Boostrap a TargetHandler() instance and call the switchColor method.
 	 * @param Event $event
 	 */
 	static public function switchColor(Event $event) {
@@ -74,12 +75,21 @@ class Bootstrap {
 	}
 	
 	/**
-	 * Boostrap a DeployHandler() instance and call the reload method.
+	 * Boostrap a TargetHandler() instance and call the switchStage method.
 	 * @param Event $event
 	 */
 	static public function switchStage(Event $event) {
 		$handler = new TargetHandler();
 		$handler->switchStage($event);
+	}
+	
+	/**
+	 * Boostrap a DeployHandler() instance and call the reload method.
+	 * @param Event $event
+	 */
+	static public function remoteConsole(Event $event) {
+		$handler = new RemoteConsoleHandler();
+		$handler->console($event);
 	}
 
 }

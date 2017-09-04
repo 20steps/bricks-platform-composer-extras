@@ -36,7 +36,7 @@ class RemoteHandler extends AbstractHandler
 		}
 		
 		if (!isset($extras[self::REMOTE_KEY])) {
-			$this->getIO()->write('<info>No remptes configured, skipping ...</info>');
+			$this->getIO()->write('<info>No remotes configured, skipping ...</info>');
 			return;
 		}
 		
