@@ -67,7 +67,7 @@ abstract class AbstractHandler
 	
     // protected helpers
 	
-	/** @return IOInterface\ */
+	/** @return IOInterface */
 	protected function getIO() {
 		return $this->io;
 	}
