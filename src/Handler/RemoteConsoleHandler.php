@@ -16,6 +16,7 @@ use BricksPlatformComposerExtras\Processor\ProcessorInterface;
 class RemoteConsoleHandler extends AbstractHandler
 {
 	
+	const TARGETS_KEY = 'target';
 	const REMOTE_KEY = 'remote';
 	
 	public function console(Event $event) {
@@ -121,7 +122,26 @@ class RemoteConsoleHandler extends AbstractHandler
 			}
 		}
 		
-		$this->getIO()->write('<info>Remote not configured, exiting ...</info>');
+		if (!isset($extras[self::TARGETS_KEY])) {
+			$this->getIO()->write('<info>No targets configured, exiting ...</info>');
+			exit;
+		}
+		
+		$targets = $extras[self::TARGETS_KEY];
+		foreach ($targets as $target) {
+			$targetName = $target['name'];
+			if ($targetName == $name) {
+				$firstRemoteName = $target['remote'][0];
+				foreach ($remotes as $remote) {
+					$remoteName = $remote['name'];
+					if ($remoteName == $firstRemoteName) {
+						return $remote;
+					}
+				}
+			}
+		}
+		
+		$this->getIO()->write('<info>Remote or target not configured, exiting ...</info>');
 		exit;
 		
 	}
