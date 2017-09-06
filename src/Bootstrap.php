@@ -91,5 +91,14 @@ class Bootstrap {
 		$handler = new RemoteConsoleHandler();
 		$handler->console($event);
 	}
+	
+	/**
+	 * Boostrap a DeployHandler() instance and call the reload method.
+	 * @param Event $event
+	 */
+	static public function remoteShell(Event $event) {
+		$handler = new RemoteConsoleHandler();
+		$handler->shell($event);
+	}
 
 }

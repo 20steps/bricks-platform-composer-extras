@@ -54,6 +54,42 @@ class RemoteConsoleHandler extends AbstractHandler
 		$this->io->write($output);
 	}
 	
+	public function shell(Event $event) {
+		$this->io = $event->getIO();
+		
+		$arguments = $event->getArguments();
+		
+		if (!(count($arguments)>=1)) {
+			throw new \InvalidArgumentException('You have to specify a remote as the first argument');
+		}
+		
+		$name = array_shift($arguments);
+		
+		if (count($arguments)==0) {
+			$shellCmdAndArgs = "";
+		} else {
+			$shellCmdAndArgs = implode(' ',$arguments);
+		}
+		
+		$remote = $this->findOneRemoteByName($event,$name);
+		
+		$url = $remote['url'];
+		
+		$commandLine = sprintf('ssh -p %d %s@%s \'cd %s; %s\'',
+			parse_url($url,PHP_URL_PORT),
+			parse_url($url,PHP_URL_USER),
+			parse_url($url,PHP_URL_HOST),
+			parse_url($url,PHP_URL_PATH),
+			addslashes($shellCmdAndArgs)
+		);
+		
+		$this->io->write(sprintf("<info>Executing %s</info>",$commandLine));
+		
+		$output = shell_exec($commandLine);
+		
+		$this->io->write($output);
+	}
+	
 	/**
 	 * @param Event $event
 	 * @param $name
