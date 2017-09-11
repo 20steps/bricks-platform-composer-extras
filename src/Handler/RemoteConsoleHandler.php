@@ -84,7 +84,77 @@ class RemoteConsoleHandler extends AbstractHandler
 			addslashes($shellCmdAndArgs)
 		);
 		
+		//$this->io->write(sprintf("<info>Executing %s</info>",$commandLine));
+		
+		$output = shell_exec($commandLine);
+		
+		$this->io->write($output);
+	}
+	
+	public function pull(Event $event) {
+		$this->io = $event->getIO();
+		
+		$arguments = $event->getArguments();
+		
+		if (!(count($arguments)>=1)) {
+			throw new \InvalidArgumentException('You have to specify a remote as the first argument');
+		}
+		
+		$name = array_shift($arguments);
+		
+		if (count($arguments)!=2) {
+			throw new \InvalidArgumentException('You have to provide source-path and target-path as arguments');
+		}
+		
+		$remote = $this->findOneRemoteByName($event,$name);
+		
+		$url = $remote['url'];
+		
+		$commandLine = sprintf('scp -P %d %s@%s:%s/%s %s',
+			parse_url($url,PHP_URL_PORT),
+			parse_url($url,PHP_URL_USER),
+			parse_url($url,PHP_URL_HOST),
+			parse_url($url,PHP_URL_PATH),
+			$arguments[0],
+			$arguments[1]
+		);
+		
 		$this->io->write(sprintf("<info>Executing %s</info>",$commandLine));
+		
+		$output = shell_exec($commandLine);
+		
+		$this->io->write($output);
+	}
+	
+	public function push(Event $event) {
+		$this->io = $event->getIO();
+		
+		$arguments = $event->getArguments();
+		
+		if (!(count($arguments)>=1)) {
+			throw new \InvalidArgumentException('You have to specify a remote as the first argument');
+		}
+		
+		$name = array_shift($arguments);
+		
+		if (count($arguments)!=2) {
+			throw new \InvalidArgumentException('You have to provide target-path and source-path as arguments');
+		}
+		
+		$remote = $this->findOneRemoteByName($event,$name);
+		
+		$url = $remote['url'];
+		
+		$commandLine = sprintf('scp -P %d %s@%s %s %s',
+			parse_url($url,PHP_URL_PORT),
+			parse_url($url,PHP_URL_USER),
+			parse_url($url,PHP_URL_HOST),
+			parse_url($url,PHP_URL_PATH),
+			$arguments[1],
+			$arguments[0]
+		);
+		
+		//$this->io->write(sprintf("<info>Executing %s</info>",$commandLine));
 		
 		$output = shell_exec($commandLine);
 		
