@@ -44,22 +44,22 @@ class Copy implements ProcessorInterface
 		
         $exists = file_exists($realFile);
         
-        $targetFile = $this->getTargetFile($realFile,$config);
+        $sourceFile = $this->getSourceFile($realFile,$config);
         
         if ($exists) {
-	        if ($this->getIO()->askConfirmation(sprintf('Destination file %s already exists - link to %s ([y]/n)? ',$realFile, $targetFile),true)) {
+	        if ($this->getIO()->askConfirmation(sprintf('Destination file %s already exists - copy from %s ([y]/n)? ',$realFile, $sourceFile),true)) {
 		        if ($sudo) {
-			        $this->getIO()->write(sprintf('<comment>Copying with sudo %s -> %s</comment>', $realFile, $targetFile));
-			        $command="sudo sh -c 'cp -f ".$realFile." ".$targetFile."'";
+			        $this->getIO()->write(sprintf('<comment>Copying with sudo %s -> %s</comment>', $sourceFile, $realFile));
+			        $command="sudo sh -c 'cp -f ".$sourceFile." ".$realFile."'";
 			        $this->getIO()->write($command);
 			        shell_exec($command);
 					if ($mode) {
-						$command="sudo sh -c 'chmod ".$mode." ".$targetFile."'";
+						$command="sudo sh -c 'chmod ".$mode." ".$realFile."'";
 						shell_exec($command);
 					}
 		        } else {
-			        $this->getIO()->write(sprintf('<comment>Copying %s -> %s</comment>', $realFile, $targetFile));
-			        copy($realFile, $targetFile);
+			        $this->getIO()->write(sprintf('<comment>Copying %s -> %s</comment>', $sourceFile, $realFile));
+			        copy($sourceFile, $realFile);
 					if ($mode) {
 						$command="sh -c 'chmod ".$mode." ".$realFile."'";
 						shell_exec($command);
@@ -68,17 +68,17 @@ class Copy implements ProcessorInterface
 	        }
         } else {
 	        if ($sudo) {
-		        $this->getIO()->write(sprintf('<comment>Copying with sudo %s -> %s</comment>', $realFile, $targetFile));
-		        $command="sudo sh -c 'cp -f ".$realFile." ".$targetFile."'";
+		        $this->getIO()->write(sprintf('<comment>Copying with sudo %s -> %s</comment>', $sourceFile, $realFile));
+		        $command="sudo sh -c 'cp -f ".$sourceFile." ".$realFile."'";
 		        $this->getIO()->write($command);
 		        shell_exec($command);
 				if ($mode) {
-					$command="sudo sh -c 'chmod ".$mode." ".$targetFile."'";
+					$command="sudo sh -c 'chmod ".$mode." ".$realFile."'";
 					shell_exec($command);
 				}
 	        } else {
-		        $this->getIO()->write(sprintf('<comment>Copying %s -> %s</comment>', $realFile, $targetFile));
-		        copy($realFile, $targetFile);
+		        $this->getIO()->write(sprintf('<comment>Copying %s -> %s</comment>', $sourceFile, $realFile));
+		        copy($sourceFile, $realFile);
 				if ($mode) {
 					$command="sh -c 'chmod ".$mode." ".$realFile."'";
 					shell_exec($command);
@@ -125,21 +125,21 @@ class Copy implements ProcessorInterface
         $this->config = $config;
     }
     
-    protected function getTargetFile($realFile,$config) {
+    protected function getSourceFile($realFile,$config) {
     	
     	if (isset($config['source-file'])) {
     		return $config['source-file'];
 	    }
 	    
 	    if (isset($config['color-only']) && $config['color-only']) {
-		    $target=Handler\AbstractHandler::getColor();
+		    $source= Handler\AbstractHandler::getColor();
 	    } else {
-		    $target = Handler\AbstractHandler::getTarget();
+		    $source = Handler\AbstractHandler::getTarget();
 	    }
 	    
 	    if (isset($config['use-hostname'])) {
 	    	$hostname=gethostname();
-		    $target=$target.'_'.$hostname;
+		    $source=$source.'_'.$hostname;
 	    }
 	
 	
@@ -149,14 +149,14 @@ class Copy implements ProcessorInterface
 
 	    if (count($filenameSegments)==1) {
 		    // regular files without suffix
-		    return $filenameSegments[0].'.'.$target;
+		    return $filenameSegments[0].'.'.$source;
 	    } else if (count($filenameSegments) == 2 && $filenameSegments[0]=='') {
 	    	// dot-files without suffix
-            return '.'.$filenameSegments[1].'.'.$target;
+            return '.'.$filenameSegments[1].'.'.$source;
 	    }
 	    // regular files with suffix
 	    $suffix = array_pop($filenameSegments);
-	    return implode('.',$filenameSegments).'.'.$target.'.'.$suffix;
+	    return implode('.',$filenameSegments).'.'.$source.'.'.$suffix;
     }
 
 }
