@@ -50,17 +50,16 @@ class Copy implements ProcessorInterface
 	        if ($this->getIO()->askConfirmation(sprintf('Destination file %s already exists - link to %s ([y]/n)? ',$realFile, $targetFile),true)) {
 		        if ($sudo) {
 			        $this->getIO()->write(sprintf('<comment>Copying with sudo %s -> %s</comment>', $realFile, $targetFile));
-			        $command="sudo sh -c 'cp -f ".$targetFile." ".$realFile."'";
+			        $command="sudo sh -c 'cp -f ".$realFile." ".$targetFile."'";
 			        $this->getIO()->write($command);
 			        shell_exec($command);
 					if ($mode) {
-						$command="sudo sh -c 'chmod ".$mode." ".$realFile."'";
+						$command="sudo sh -c 'chmod ".$mode." ".$targetFile."'";
 						shell_exec($command);
 					}
 		        } else {
 			        $this->getIO()->write(sprintf('<comment>Copying %s -> %s</comment>', $realFile, $targetFile));
-			        unlink($realFile);
-			        symlink($targetFile, $realFile);
+			        copy($realFile, $targetFile);
 					if ($mode) {
 						$command="sh -c 'chmod ".$mode." ".$realFile."'";
 						shell_exec($command);
@@ -70,21 +69,16 @@ class Copy implements ProcessorInterface
         } else {
 	        if ($sudo) {
 		        $this->getIO()->write(sprintf('<comment>Copying with sudo %s -> %s</comment>', $realFile, $targetFile));
-		        $command="sudo sh -c 'cp -f ".$targetFile." ".$realFile."'";
+		        $command="sudo sh -c 'cp -f ".$realFile." ".$targetFile."'";
 		        $this->getIO()->write($command);
 		        shell_exec($command);
 				if ($mode) {
-					$command="sudo sh -c 'chmod ".$mode." ".$realFile."'";
+					$command="sudo sh -c 'chmod ".$mode." ".$targetFile."'";
 					shell_exec($command);
 				}
 	        } else {
 		        $this->getIO()->write(sprintf('<comment>Copying %s -> %s</comment>', $realFile, $targetFile));
-		        try {
-			        unlink($realFile);
-		        } catch (\Exception $e) {
-			        // try to unlink as $realFile might be a stale link
-		        }
-		        symlink($targetFile, $realFile);
+		        copy($realFile, $targetFile);
 				if ($mode) {
 					$command="sh -c 'chmod ".$mode." ".$realFile."'";
 					shell_exec($command);
