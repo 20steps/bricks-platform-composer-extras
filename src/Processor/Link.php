@@ -50,7 +50,7 @@ class Link implements ProcessorInterface
 	        if ($this->getIO()->askConfirmation(sprintf('Destination file %s already exists - link to %s ([y]/n)? ',$realFile, $targetFile),true)) {
 		        if ($sudo) {
 			        $this->getIO()->write(sprintf('<comment>Relinking with sudo %s -> %s</comment>', $realFile, $targetFile));
-			        $command="sudo sh -c 'ln -sf ".$realFile." ".$target."'";
+			        $command="sudo sh -c 'ln -sf ".$targetFile." ".$realFile."'";
 			        $this->getIO()->write($command);
 			        shell_exec($command);
 					if ($mode) {
@@ -60,9 +60,9 @@ class Link implements ProcessorInterface
 		        } else {
 			        $this->getIO()->write(sprintf('<comment>Relinking %s -> %s</comment>', $realFile, $targetFile));
 			        try {
-				        unlink($targetFile);
+				        unlink($realFile);
 			        } catch(\Exception $e) {
-				        // try to unlink as $targetFile might be a stale link
+				        // try to unlink as $realFile might be a stale link
 			        }
 			        symlink($targetFile, $realFile);
 					if ($mode) {
@@ -74,7 +74,7 @@ class Link implements ProcessorInterface
         } else {
 	        if ($sudo) {
 		        $this->getIO()->write(sprintf('<comment>Linking with sudo %s -> %s</comment>', $realFile, $targetFile));
-		        $command="sudo sh -c 'ln -sf ".$realFile." ".$targetFile."'";
+		        $command="sudo sh -c 'ln -sf ".$targetFile." ".$realFile."'";
 		        $this->getIO()->write($command);
 		        shell_exec($command);
 				if ($mode) {
@@ -84,9 +84,9 @@ class Link implements ProcessorInterface
 	        } else {
 		        $this->getIO()->write(sprintf('<comment>Linking %s -> %s</comment>', $realFile, $targetFile));
 		        try {
-			        unlink($targetFile);
+			        unlink($realFile);
 		        } catch (\Exception $e) {
-			        // try to unlink as $targetFile might be a stale link
+			        // try to unlink as $realFile might be a stale link
 		        }
 		        symlink($targetFile, $realFile);
 				if ($mode) {
