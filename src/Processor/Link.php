@@ -59,7 +59,11 @@ class Link implements ProcessorInterface
 					}
 		        } else {
 			        $this->getIO()->write(sprintf('<comment>Relinking %s -> %s</comment>', $realFile, $targetFile));
-			        unlink($targetFile);
+			        try {
+				        unlink($targetfile);
+			        } catch(\Exception $e) {
+				        // try to unlink as $realFile might be a stale link
+			        }
 			        symlink($targetFile, $realFile);
 					if ($mode) {
 						$command="sh -c 'chmod ".$mode." ".$realFile."'";
@@ -80,9 +84,9 @@ class Link implements ProcessorInterface
 	        } else {
 		        $this->getIO()->write(sprintf('<comment>Linking %s -> %s</comment>', $realFile, $targetFile));
 		        try {
-			        unlink($targetFile);
+			        unlink($realFile);
 		        } catch (\Exception $e) {
-			        // try to unlink as $targetFile might be a stale link
+			        // try to unlink as $realFile might be a stale link
 		        }
 		        symlink($targetFile, $realFile);
 				if ($mode) {
