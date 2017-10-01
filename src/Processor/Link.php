@@ -50,7 +50,7 @@ class Link implements ProcessorInterface
 	        if ($this->getIO()->askConfirmation(sprintf('Destination file %s already exists - link to %s ([y]/n)? ',$realFile, $targetFile),true)) {
 		        if ($sudo) {
 			        $this->getIO()->write(sprintf('<comment>Relinking with sudo %s -> %s</comment>', $realFile, $targetFile));
-			        $command="sudo sh -c 'ln -sfF ".$targetFile." ".$realFile."'";
+			        $command="sudo sh -c 'ln -sfn ".$targetFile." ".$realFile."'";
 			        $this->getIO()->write($command);
 			        shell_exec($command);
 					if ($mode) {
@@ -74,7 +74,7 @@ class Link implements ProcessorInterface
         } else {
 	        if ($sudo) {
 		        $this->getIO()->write(sprintf('<comment>Linking with sudo %s -> %s</comment>', $realFile, $targetFile));
-		        $command="sudo sh -c 'ln -sfF ".$targetFile." ".$realFile."'";
+		        $command="sudo sh -c 'ln -sfn ".$targetFile." ".$realFile."'";
 		        $this->getIO()->write($command);
 		        shell_exec($command);
 				if ($mode) {
